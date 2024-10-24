@@ -10,6 +10,7 @@ import os
 
 # routes
 from routes.home import home_router
+from routes.auth import auth_router
 warnings.filterwarnings("ignore")
 load_dotenv()
 
@@ -30,6 +31,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(home_router)
+app.include_router(auth_router)
 
 if __name__ == '__main__':
     if __name__ == '__main__':
