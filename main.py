@@ -7,10 +7,10 @@ from fastapi import FastAPI
 import warnings
 import uvicorn
 import os
-
 # routes
 from routes.home import home_router
-from routes.auth import auth_router
+from routes.user import user_router
+
 warnings.filterwarnings("ignore")
 load_dotenv()
 
@@ -19,6 +19,8 @@ logging_config_path = Path(PROJECT_ROOT_PATH + "/config/logging.json")
 logger = LoguruLogger.make_logger(logging_config_path, request_id="yami-api")
 
 origin = ["*"]
+
+
 app = FastAPI(debug=os.environ.get("DEBUG", False), version=os.environ.get("APP_VERSION"))
 app.add_middleware(
     CORSMiddleware,
@@ -31,15 +33,14 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(home_router)
-app.include_router(auth_router)
+app.include_router(user_router)
 
 if __name__ == '__main__':
-    if __name__ == '__main__':
-        # workers = os.cpu_count()
-        workers = 2
-        uvicorn.run(
-            "main:app",
-            host=os.environ.get("HOST", "127.0.0.1"),
-            port=int(os.environ.get("PORT", 8443)),
-            workers=workers
-        )
+    # workers = os.cpu_count()
+    workers = 2
+    uvicorn.run(
+        "main:app",
+        host=os.environ.get("HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", 8443)),
+        workers=workers
+    )
