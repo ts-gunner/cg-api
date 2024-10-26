@@ -35,6 +35,10 @@ async def save_profile(
     file_content = await avatar_blob.read()
     bucket_remote_path = storage.put_file(file_content, f"/{openid}/{avatar_blob.filename}")
     res = get_user_service(db).create_or_update_user_profile(bucket_remote_path, nickname, openid)
+    res.data = {
+        "avatar_url": bucket_remote_path,
+        "nickname": nickname
+    }
     return res
 
 
