@@ -16,3 +16,5 @@
 
 python依赖包可参考哦requirements.txt
 
+角色管理： RBAC, 一个人有多个角色，一个角色有多个权限， 一个人可以直接授权
+鉴权: jwt

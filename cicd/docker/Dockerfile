@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG BUILD_DEB_PKGS="unzip"

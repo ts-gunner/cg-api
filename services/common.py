@@ -1,12 +1,12 @@
-import os
+from fastapi import Header, status, HTTPException, Depends
 from functools import lru_cache
-from pathlib import Path
 from utils.logger import LoguruLogger
 from models.setting import Setting, BucketStoreType
+from models.common import TokenData, APIResponse
 from sqlalchemy.orm import sessionmaker, Session
 from services.storage import TencentBucketStorage
 from services.user import UserService
-
+import jwt
 
 @lru_cache
 def get_init_settings():
@@ -37,4 +37,24 @@ def get_storage_service():
 
 
 def get_user_service(db: Session):
-    return UserService(db)
+    return UserService(setting=get_init_settings(), db=db)
+
+
+def verify_user_request(auth_token: str = Header()) -> TokenData:
+    setting = get_init_settings().settings
+    credential_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+    try:
+        payload = jwt.decode(auth_token, setting.app_secret, algorithms=["HS256"])
+        token_data = TokenData()
+        token_data.user_id = payload["user_id"]
+        token_data.roles = payload["roles"]
+        token_data.permissions = payload["permissions"]
+        token_data.groups = payload["groups"]
+
+        return token_data
+    except Exception as err:
+        raise credential_exception

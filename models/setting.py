@@ -50,7 +50,7 @@ class Setting:
             self._bucket_client = CosS3Client(config)
 
     def _set_configuration(self):
-        pass
+        self._settings.app_secret = os.environ["APP_SECRET"]
 
     @property
     def metastore(self):

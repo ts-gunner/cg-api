@@ -3,8 +3,8 @@ import os
 from models.common import APIResponse
 import json
 
-class WeChatService:
 
+class WeChatService:
     @staticmethod
     def we_login(code: str):
         url = "https://api.weixin.qq.com/sns/jscode2session?appid={}&secret={}&js_code={}&grant_type=authorization_code".format(

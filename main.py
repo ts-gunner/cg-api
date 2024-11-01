@@ -7,12 +7,13 @@ from fastapi import FastAPI
 import warnings
 import uvicorn
 import os
-# routes
-from routes.home import home_router
-from routes.user import user_router
 
 warnings.filterwarnings("ignore")
 load_dotenv()
+
+# routes
+from routes.home import home_router
+from routes.user import user_router
 
 PROJECT_ROOT_PATH = os.path.dirname(os.path.abspath(__name__))
 logging_config_path = Path(PROJECT_ROOT_PATH + "/config/logging.json")
@@ -20,8 +21,7 @@ logger = LoguruLogger.make_logger(logging_config_path, request_id="yami-api")
 
 origin = ["*"]
 
-
-app = FastAPI(debug=os.environ.get("DEBUG", False), version=os.environ.get("APP_VERSION"))
+app = FastAPI(debug=os.environ.get("DEBUG", False), version=os.environ.get("APP_VERSION", "0.0.1"))
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origin,
@@ -31,7 +31,6 @@ app.add_middleware(
 )
 # 将OpenAPI docs代码接管到本地中
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 app.include_router(home_router)
 app.include_router(user_router)
 
