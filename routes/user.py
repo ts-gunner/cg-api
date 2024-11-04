@@ -47,3 +47,19 @@ def get_user_profile(openid: str, db: Session = Depends(get_db), token_data: Tok
     logger.info(token_data)
     res = get_user_service(db).get_user_info(openid, token_data)
     return res
+
+
+@user_router.get("/user/wechat/get_all_roles")
+def get_all_roles(db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)):
+    logger = LoguruLogger.get_logger()
+    logger.info("get_all_roles...")
+    return get_user_service(db).get_all_roles()
+
+
+@user_router.get("/user/wechat/get_permission_roles")
+def get_all_permissions(db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)):
+    logger = LoguruLogger.get_logger()
+    logger.info("get_all_permissions...")
+    return get_user_service(db).get_all_permissions()
+
+

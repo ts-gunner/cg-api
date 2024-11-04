@@ -14,6 +14,8 @@ load_dotenv()
 # routes
 from routes.home import home_router
 from routes.user import user_router
+from routes.task import task_router
+from routes.shop import shop_router
 
 PROJECT_ROOT_PATH = os.path.dirname(os.path.abspath(__name__))
 logging_config_path = Path(PROJECT_ROOT_PATH + "/config/logging.json")
@@ -33,6 +35,8 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(home_router)
 app.include_router(user_router)
+app.include_router(task_router)
+app.include_router(shop_router)
 
 if __name__ == '__main__':
     # workers = os.cpu_count()

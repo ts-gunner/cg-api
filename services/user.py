@@ -27,7 +27,8 @@ class UserDataManager:
         return [UserRoleBase.model_validate(role) for role in role_list]
 
     def get_user_group_list(self, openid: str) -> List[UserGroupBase]:
-        group_list = self.db.query(UserGroup).join(UserGroupMap, UserGroup.group_id == UserGroupMap.group_id).filter(UserGroupMap.user_id == openid).all()
+        group_list = self.db.query(UserGroup).join(UserGroupMap, UserGroup.group_id == UserGroupMap.group_id).filter(
+            UserGroupMap.user_id == openid).all()
         return [UserGroupBase.model_validate(group) for group in group_list]
 
     def get_user_permission_list(self, openid: str) -> List[str]:
@@ -40,6 +41,14 @@ class UserDataManager:
         permission_list = self.db.query(RolePermission.permission_id, AuthPermission.permission_name).join(
             AuthPermission, RolePermission.permission_id == AuthPermission.permission_id
         ).filter(RolePermission.role_id.in_(role_ids)).all()
+        return [AuthPermissionBase.model_validate(permission) for permission in permission_list]
+
+    def get_all_role_list(self):
+        role_list = self.db.query(UserRole).all()
+        return [UserRoleBase.model_validate(role) for role in role_list]
+
+    def get_all_permission_list(self):
+        permission_list = self.db.query(AuthPermission).all()
         return [AuthPermissionBase.model_validate(permission) for permission in permission_list]
 
 
@@ -94,3 +103,9 @@ class UserService:
         token = create_access_token(token_data.model_dump(), self.setting.app_secret)
         self._logger.info("token: {}".format(token))
         return token
+
+    def get_all_roles(self):
+        return APIResponse(data=self._dm.get_all_role_list())
+
+    def get_all_permissions(self):
+        return APIResponse(data=self._dm.get_all_permission_list())

@@ -3,6 +3,7 @@ import hmac
 import jwt
 from datetime import datetime, timedelta, timezone
 from typing import Union
+import uuid
 # wechat only support hmac sha256
 def hmac_sha256(key, word=""):
     return hmac.new(key.encode("utf-8"), word.encode("utf-8"), hashlib.sha256).hexdigest()
@@ -18,3 +19,8 @@ def create_access_token(data: dict, secret_key, expires_delta: Union[timedelta, 
         to_encode.update({"exp": expire})
     encode_jwt = jwt.encode(to_encode, secret_key, algorithm="HS256")
     return encode_jwt
+
+
+# 创建id
+def create_object_id():
+    return str(uuid.uuid4())

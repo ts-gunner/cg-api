@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
     phone_number VARCHAR(50)  COMMENT '手机号码',
     avatar_url TEXT COMMENT '头像地址',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (openid)
 ) default charset=utf8mb4 COMMENT '用户信息';
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `auth_permission` (
     permission_id VARCHAR(50) PRIMARY KEY NOT NULL,
     permission_name VARCHAR(50) NOT NULL,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) default charset=utf8mb4 COMMENT '权限信息';
 
 DROP TABLE IF EXISTS `user_permission`;
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
     permission_id VARCHAR(50) NOT NULL,
     user_id VARCHAR(100) NOT NULL,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) default charset=utf8mb4 COMMENT '用户权限';
 
 DROP TABLE IF EXISTS `role_permission`;
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
     permission_id VARCHAR(50) NOT NULL,
     role_id VARCHAR(100) NOT NULL,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) default charset=utf8mb4 COMMENT '角色权限';
 
 DROP TABLE IF EXISTS `user_role_map`;
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `user_role_map` (
     role_id VARCHAR(100) NOT NULL,
     user_id VARCHAR(100) NOT NULL,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) default charset=utf8mb4 COMMENT '用户-角色-映射表';
 
 
@@ -68,5 +68,30 @@ CREATE TABLE IF NOT EXISTS `user_group_map` (
     group_id VARCHAR(100) NOT NULL,
     user_id VARCHAR(100) NOT NULL,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) default charset=utf8mb4 COMMENT '用户-组-映射表';
+
+DROP TABLE IF EXISTS `task_info`;
+CREATE TABLE IF NOT EXISTS `task_info` (
+    task_id VARCHAR(100) PRIMARY KEY,
+    user_id VARCHAR(100),
+    category VARCHAR(30) NOT NULL,
+    point DECIMAL(10, 2),
+    status VARCHAR(30) NOT NULL,
+    content VARCHAR(255) NOT NULL,
+    `attach_list` TEXT,
+    `body` TEXT,
+    remark VARCHAR(255) NOT NULL,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) default charset=utf8mb4 COMMENT '任务表';
+
+DROP TABLE IF EXISTS `rewards_balance`;
+CREATE TABLE IF NOT EXISTS `rewards_balance` (
+    `id` int not null PRIMARY KEY AUTO_INCREMENT,
+    user_id VARCHAR(100) NOT NULL,
+    total_points DECIMAL(10, 2) DEFAULT 0 NOT NULL,
+    used_points DECIMAL(10, 2) DEFAULT 0 NOT NULL,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) default charset=utf8mb4 COMMENT '积分表';

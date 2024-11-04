@@ -6,6 +6,7 @@ from models.common import TokenData, APIResponse
 from sqlalchemy.orm import sessionmaker, Session
 from services.storage import TencentBucketStorage
 from services.user import UserService
+from services.task import TaskService
 import jwt
 
 @lru_cache
@@ -58,3 +59,6 @@ def verify_user_request(auth_token: str = Header()) -> TokenData:
         return token_data
     except Exception as err:
         raise credential_exception
+
+def get_task_service(db:Session):
+    return TaskService(db)
