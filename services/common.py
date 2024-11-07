@@ -1,5 +1,6 @@
 from fastapi import Header, status, HTTPException, Depends
 from functools import lru_cache
+from services.shop import ShopService
 from utils.logger import LoguruLogger
 from models.setting import Setting, BucketStoreType
 from models.common import TokenData, APIResponse
@@ -8,6 +9,7 @@ from services.storage import TencentBucketStorage
 from services.user import UserService
 from services.task import TaskService
 import jwt
+
 
 @lru_cache
 def get_init_settings():
@@ -60,5 +62,10 @@ def verify_user_request(auth_token: str = Header()) -> TokenData:
     except Exception as err:
         raise credential_exception
 
-def get_task_service(db:Session):
+
+def get_task_service(db: Session):
     return TaskService(db)
+
+
+def get_shop_service(db: Session):
+    return ShopService(db)

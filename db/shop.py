@@ -13,3 +13,13 @@ class RewardsBalance(Base):
     used_points = Column(DECIMAL(10, 2), default=0, server_default=text("0"), comment="已用积分")
     create_time = Column(DateTime, server_default=func.now())
     update_time = Column(DateTime, server_default=func.now())
+
+
+class RewardsBalanceBase(BaseModel):
+    user_id: str
+    total_points: float
+    used_points: float
+
+    class Config:
+        from_attributes = True
+        

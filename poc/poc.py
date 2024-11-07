@@ -1,4 +1,7 @@
-import datetime
+from pydantic import BaseModel, Field
 
-d = datetime.datetime(2024, 11, 2, 22, 32, 42)
-d.strftime("")
+class Category(BaseModel):
+    cg_name: str = Field(alias="df_name")
+
+if __name__ == '__main__':
+    c = Category(df_name="ssa")

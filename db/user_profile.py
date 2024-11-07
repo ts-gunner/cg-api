@@ -13,6 +13,7 @@ class UserProfile(Base):
     nickname = Column(String(100), comment="用户昵称")
     phone_number = Column(String(50), comment="手机号码")
     avatar_url = Column(Text, comment="头像地址")
+    remark = Column(String(255), comment="备注")
     create_time = Column(DateTime, server_default=func.now())
     update_time = Column(DateTime, server_default=func.now())
 

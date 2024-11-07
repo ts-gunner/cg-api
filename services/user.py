@@ -85,7 +85,6 @@ class UserService:
 
     def get_user_info(self, openid: str, token: TokenData):
         obj = self._dm.get_user_object(openid)
-
         return APIResponse(data={
             "profile": UserProfileBase.model_validate(obj) if obj else None,
             "roles": token.roles,
@@ -109,3 +108,4 @@ class UserService:
 
     def get_all_permissions(self):
         return APIResponse(data=self._dm.get_all_permission_list())
+

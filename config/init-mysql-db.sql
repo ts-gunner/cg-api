@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
     nickname VARCHAR(100)  COMMENT '用户昵称',
     phone_number VARCHAR(50)  COMMENT '手机号码',
     avatar_url TEXT COMMENT '头像地址',
+    remark TEXT COMMENT '备注',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (openid)
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `task_info` (
     content VARCHAR(255) NOT NULL,
     `attach_list` TEXT,
     `body` TEXT,
-    remark VARCHAR(255) NOT NULL,
+    remark VARCHAR(255),
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) default charset=utf8mb4 COMMENT '任务表';

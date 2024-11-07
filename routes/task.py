@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, UploadFile
 from sqlalchemy.orm import Session
-from models.request import AddTaskRequest, TaskListRequest, AuditTaskRequest
+from models.request import AddTaskRequest, TaskListRequest, AuditTaskRequest,WorkerRecordRequest
 from models.common import APIResponse, TokenData
 from services.common import verify_user_request, get_db, get_task_service, get_storage_service
 from utils.logger import LoguruLogger
@@ -53,3 +53,10 @@ def audit_task(request: AuditTaskRequest, db: Session = Depends(get_db), token_d
     logger = LoguruLogger.get_logger()
     logger.info("wechat audit task... params: {}".format(request.model_dump_json()))
     return get_task_service(db).audit_task_approval(request.task_id, request.approve_result, request.comment)
+
+
+@task_router.post("/task/wechat/get_worker_record")
+def get_worker_record(request: WorkerRecordRequest, db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)):
+    logger = LoguruLogger.get_logger()
+    logger.info("get_all_worker...")
+    return get_task_service(db).get_worker_record(request)

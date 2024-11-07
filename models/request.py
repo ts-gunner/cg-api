@@ -23,3 +23,9 @@ class AuditTaskRequest(BaseModel):
     approve_result: bool  # true 通过， false 不通过
     comment: str
 
+
+class WorkerRecordRequest(BaseModel):
+    role_id: str
+    status: str
+
+

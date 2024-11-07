@@ -4,12 +4,16 @@ from fastapi import status
 from sqlalchemy.orm import Session
 from db.task import TaskCategory, TaskInfo, TaskStatus, TaskInfoBase
 from db.shop import RewardsBalance
+from db.role import UserRoleMap
+from db.user_profile import UserProfile
 from models.common import APIResponse
 from utils.logger import LoguruLogger
-from models.request import AddTaskRequest, TaskListRequest
+from models.request import AddTaskRequest, TaskListRequest, WorkerRecordRequest
 from utils.encrypt import create_object_id
 from utils.math import round_2
 from decimal import Decimal
+from models.response import TaskWorkerRecord
+
 
 class TaskDataManager:
     def __init__(self, db: Session):
@@ -48,6 +52,16 @@ class TaskDataManager:
             self.db.add(balance)
             self.db.commit()
         return balance
+
+    def get_worker_record(self, role_id, **kwargs):
+        task_list = self.db.query(
+            UserProfile, TaskInfo
+        ).join(
+            UserProfile, UserProfile.openid == TaskInfo.user_id
+        ).join(
+            UserRoleMap, UserRoleMap.user_id == TaskInfo.user_id
+        ).filter(UserRoleMap.role_id == role_id).all()
+        return task_list
 
 
 class TaskService:
@@ -95,9 +109,9 @@ class TaskService:
         if task_object.status == TaskStatus.REVIEW.value:
             task_object.status = TaskStatus.APPROVED.value if approval_result else TaskStatus.FAILED.value
             task_object.remark = comment
-
             # 计算积分
-            self.calculate_user_points(task_object.user_id, task_object.point)
+            if approval_result:
+                self.calculate_user_points(task_object.user_id, task_object.point)
             self.db.commit()
             return APIResponse(msg="审核成功")
         elif task_object.status == TaskStatus.APPROVED.value:
@@ -111,3 +125,21 @@ class TaskService:
         balance_obj = self._dm.get_balance_object(user_id)
         balance_obj.total_points = round_2(Decimal(balance_obj.total_points) + Decimal(points))
         self.db.commit()
+
+    def get_worker_record(self, request: WorkerRecordRequest):
+        other_param = request.model_dump()
+        other_param.pop("role_id")
+        task_list = self._dm.get_worker_record(request.role_id, **other_param)
+        record_list = []
+        for profile, task in task_list:
+            record_list.append(TaskWorkerRecord(
+                user_id=task.user_id,
+                nickname=profile.nickname,
+                remark=profile.remark,
+                task_id=task.task_id,
+                content=task.content,
+                create_time=task.create_time,
+                status=task.status,
+                category=task.category
+            ))
+        return APIResponse(data=record_list)
