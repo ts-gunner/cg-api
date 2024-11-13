@@ -19,23 +19,18 @@ class TaskDataManager:
     def __init__(self, db: Session):
         self.db = db
 
-    def add_task(
-            self,
-            openid: str, category: TaskCategory, content: str, point: float,
-            body: Optional[str] = "", task_status: str = TaskStatus.CREATED.value
-    ):
-        task_id = create_object_id()
-        tk = TaskInfo()
-        tk.task_id = task_id
-        tk.user_id = openid
-        tk.category = category.value
-        tk.content = content
-        tk.point = round_2(point)
-        tk.status = task_status
-        tk.body = body
-        tk.attach_list = json.dumps([])
-        self.db.add(tk)
-        return task_id
+    def add_task(self, request: AddTaskRequest):
+        obj = TaskInfo()
+        obj.task_id = request.task_id
+        obj.user_id = request.openid
+        obj.category = request.category
+        obj.content = request.content
+        obj.point = request.point
+        obj.body = request.body
+        obj.attach_list = json.dumps(request.upload_list)
+        obj.status = TaskStatus.REVIEW.value
+        self.db.add(obj)
+        self.db.commit()
 
     def get_task_object(self, task_id: str) -> TaskInfo:
         return self.db.query(TaskInfo).filter(TaskInfo.task_id == task_id).first()
@@ -71,18 +66,7 @@ class TaskService:
         self._dm = TaskDataManager(db)
 
     def add_task(self, request: AddTaskRequest):
-        task_id = self._dm.add_task(request.openid, request.category, request.content, request.point, request.body, TaskStatus.REVIEW.value)
-        self.db.commit()
-        return APIResponse(data=task_id)
-
-    def bind_attachment_to_task(self, task_id: str, remote_url: str):
-        obj = self._dm.get_task_object(task_id)
-        if not obj:
-            return APIResponse(code=status.HTTP_400_BAD_REQUEST)
-        attach_list = json.loads(obj.attach_list)
-        attach_list.append(remote_url)
-        obj.attach_list = json.dumps(attach_list)
-        self.db.commit()
+        self._dm.add_task(request)
         return APIResponse()
 
     def get_task_list(self, request: TaskListRequest):
@@ -105,6 +89,7 @@ class TaskService:
         task_object = self._dm.get_task_object(task_id)
         if not task_object:
             return APIResponse(code=status.HTTP_400_BAD_REQUEST, msg="任务记录不存在，请检查后再审核")
+        # todo: 需要有approve权限才能审核，后期使用装饰器实现，暂时使用函数
 
         if task_object.status == TaskStatus.REVIEW.value:
             task_object.status = TaskStatus.APPROVED.value if approval_result else TaskStatus.FAILED.value

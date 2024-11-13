@@ -62,7 +62,7 @@ class UserService:
     def create_user_profile(self, openid: str):
         obj = self._dm.get_user_object(openid)
         if not obj:
-            self._dm.create_user_object({"openid": openid})
+            self._dm.create_user_object({"openid": openid, "nickname": "微信用户"})
         self.db.commit()
 
     def create_or_update_user_profile(self, avatar_url: str, nickname: str, openid: str):

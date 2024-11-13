@@ -1,3 +1,4 @@
+from typing import Optional
 from db import Base
 from sqlalchemy import Column, Integer, String, DateTime, Text, DECIMAL
 from sqlalchemy.sql import func, text
@@ -22,4 +23,28 @@ class RewardsBalanceBase(BaseModel):
 
     class Config:
         from_attributes = True
-        
+
+
+class MarketGoods(Base):
+    __tablename__ = "market_goods"
+    id = Column(Integer, primary_key=True)
+    good_id = Column(String(100), nullable=False, comment="good ID")
+    good_name = Column(String(100), nullable=False, comment="商品名称")
+    description = Column(String(255), comment="商品描述")
+    point = Column(DECIMAL(10, 2), comment="兑换需要的积分")
+    display_img_path = Column(Text, comment="展示出来的商品图片路径")
+    remark = Column(String(255), comment="备注")
+    create_time = Column(DateTime, server_default=func.now())
+    update_time = Column(DateTime, server_default=func.now())
+
+
+class MarketGoodsBase(BaseModel):
+    good_id: str
+    good_name: str
+    description: str
+    point: float
+    display_img_path: str
+    remark: Optional[str]
+
+    class Config:
+        from_attributes = True

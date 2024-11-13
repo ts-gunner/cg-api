@@ -1,6 +1,6 @@
-from fastapi import UploadFile
-import aiofiles
-
+from pydantic import BaseModel
+from fastapi import status
+from typing import Any
 
 class SingletonMeta(type):
     _instance = {}
@@ -10,3 +10,8 @@ class SingletonMeta(type):
             cls._instance[cls] = super().__call__(*args, **kwargs)
         return cls._instance[cls]
 
+
+class HttpResponse(BaseModel):
+    code: int = status.HTTP_200_OK
+    msg: str = ""
+    data: Any = None

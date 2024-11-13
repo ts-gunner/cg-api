@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Form, UploadFile
 from sqlalchemy.orm import Session
-from models.request import AddTaskRequest, TaskListRequest, AuditTaskRequest,WorkerRecordRequest
+from models.request import AddTaskRequest, TaskListRequest, AuditTaskRequest, WorkerRecordRequest
 from models.common import APIResponse, TokenData
 from services.common import verify_user_request, get_db, get_task_service, get_storage_service
 from utils.logger import LoguruLogger
-import os
+from routes import auth
 
 task_router = APIRouter(
     tags=["task"],
@@ -35,20 +35,8 @@ def add_task(request: AddTaskRequest, db: Session = Depends(get_db), token_data:
     return get_task_service(db).add_task(request)
 
 
-@task_router.post("/task/wechat/save_task_attachment")
-async def save_task_attachment(
-        blob: UploadFile, task_id: str = Form(...), openid: str = Form(...),
-        db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)
-):
-    logger = LoguruLogger.get_logger()
-    logger.info("wechat save_task_attachment...")
-    storage = get_storage_service()
-    file_content = await blob.read()
-    remote_url = storage.put_file(file_content, f"/{openid}/{blob.filename}")
-    return get_task_service(db).bind_attachment_to_task(task_id, remote_url)
-
-
 @task_router.post("/task/wechat/audit_task")
+@auth.has_permission(["task:audit"])
 def audit_task(request: AuditTaskRequest, db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)):
     logger = LoguruLogger.get_logger()
     logger.info("wechat audit task... params: {}".format(request.model_dump_json()))
