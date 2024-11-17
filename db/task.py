@@ -14,6 +14,7 @@ class TaskStatus(str, Enum):
     APPROVED = "approved"  # 任务审核通过
     FAILED = "failed"  # 任务审核失败
     DEPRECATED = "deprecated"  # 任务作废
+    ALL = "all"
 
 
 class TaskCategory(str, Enum):
@@ -49,7 +50,7 @@ class TaskInfoBase(BaseModel):
     create_time: str
     remark: Optional[str]
 
-    @field_validator("create_time",mode="before")
+    @field_validator("create_time", mode="before")
     @classmethod
     def switch_datetime_to_str(cls, v):
         if isinstance(v, datetime.datetime):

@@ -101,11 +101,13 @@ class UserService:
         token_data.permissions = [*self._dm.get_user_permission_list(openid), *self._dm.get_role_permission_list(role_ids)]
         token = create_access_token(token_data.model_dump(), self.setting.app_secret)
         self._logger.info("token: {}".format(token))
-        return token
+        return {
+            "token": token,
+            "roles": role_list
+        }
 
     def get_all_roles(self):
         return APIResponse(data=self._dm.get_all_role_list())
 
     def get_all_permissions(self):
         return APIResponse(data=self._dm.get_all_permission_list())
-

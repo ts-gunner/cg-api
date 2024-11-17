@@ -17,8 +17,8 @@ def wechat_login(code: str, db: Session = Depends(get_db)):
     logger.info("wechat login...")
     logger.info("wechat login parameter - code: {}".format(code))
     res = WeChatService.we_login(code)
-    token = get_user_service(db).user_login(res["openid"])
-    res["token"] = token
+    response = get_user_service(db).user_login(res["openid"])
+    res.update(response)
     logger.info("wechat login successfully!!")
     logger.info(res)
     return APIResponse(data=res)

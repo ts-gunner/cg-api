@@ -21,7 +21,7 @@ def get_tasks(request: TaskListRequest, db: Session = Depends(get_db), token_dat
 
 
 @task_router.get("/task/wechat/get_task")
-def get_tasks(task_id: str, db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)):
+def get_task_detail(task_id: str, db: Session = Depends(get_db), token_data: TokenData = Depends(verify_user_request)):
     logger = LoguruLogger.get_logger()
     logger.info("wechat get_tasks..., params - task_id: {}".format(task_id))
     return get_task_service(db).get_task(task_id)

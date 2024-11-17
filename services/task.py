@@ -36,8 +36,11 @@ class TaskDataManager:
         return self.db.query(TaskInfo).filter(TaskInfo.task_id == task_id).first()
 
     def get_task_list(self, openid: str, state: str = TaskStatus.CREATED.value):
-        task_list = self.db.query(TaskInfo).filter(
-            TaskInfo.user_id == openid, TaskInfo.status == state).order_by(TaskInfo.create_time.desc()).all()
+        task_list = self.db.query(TaskInfo).filter(TaskInfo.user_id == openid)
+        if state != "all":
+            task_list = task_list.filter(TaskInfo.status == state)
+
+        task_list = task_list.order_by(TaskInfo.create_time.desc()).all()
         return [TaskInfoBase.model_validate(task) for task in task_list]
 
     def get_balance_object(self, user_id: str) -> RewardsBalance:
@@ -55,7 +58,7 @@ class TaskDataManager:
             UserProfile, UserProfile.openid == TaskInfo.user_id
         ).join(
             UserRoleMap, UserRoleMap.user_id == TaskInfo.user_id
-        ).filter(UserRoleMap.role_id == role_id).all()
+        ).filter(UserRoleMap.role_id == role_id).order_by(TaskInfo.create_time.desc()).all()
         return task_list
 
 
